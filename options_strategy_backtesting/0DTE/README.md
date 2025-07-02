@@ -8,7 +8,7 @@ This system lets you backtest a 0DTE (zero days to expiration) bull put spread o
 2. **Data Collection**: Download historical stock (bar data) and options data (tick data) at 1-minute intervals for the backtesting window.
 3. **Trade Simulation**:
    - **Initialization**: 
-     - Start scaning through historical market data chronologically at the earliest timestamp.
+     - Start scanning through historical market data chronologically from the earliest timestamp.
    - **Option Analysis**:
      - Calculate the options Greeks (delta) and Implied Volatility (IV) for each option symbol.
      - Find the first valid option pair that meets our trading criteria to build the bull put spread
