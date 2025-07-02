@@ -95,16 +95,12 @@ flowchart TD
 - **setup_alpaca_clients**: Connects to Alpaca and returns API clients for trading, options, and stocks.
 - **run_iterative_backtest**: Orchestrates the backtest, running multiple trades over the chosen period.
 - **get_daily_stock_bars_df**: Fetches daily price bars for the underlying (e.g., SPY).
-- **collect_option_symbols_by_expiration**: Determines which option symbols to consider for each expiration date.
+- **collect_option_symbols_by_expiration**: Collect option symbols grouped by expiration datetime based on stock bars data.
   - Uses **calculate_strike_price_range** and **generate_put_option_symbols** internally.
-- **get_stock_and_option_historical_data**: Retrieves intraday bars for both options and the underlying, organized by timestamp.
-  - Uses **extract_strike_price_from_symbol** internally.
+- **get_stock_and_option_historical_data**: Retrieves intraday bars for the underlying and tick data for options, organized by timestamp.
+  - Uses **extract_strike_price_from_symbol** internally to extract strike price from option symbol.
 - **trade_0DTE_options_historical**: Simulates a single bull put spread trade using historical data, monitoring for exit conditions.
 - **find_short_and_long_puts**: Selects the best short and long put pair for the spread based on delta and spread width.
-  - Uses **calculate_delta_historical** and **create_option_dict_historical**.
-  - **calculate_delta_historical** uses **calculate_implied_volatility**.
+  - Uses **calculate_delta_historical** and **create_option_dict_historical** internally.
+  - **calculate_delta_historical** uses **calculate_implied_volatility** to calculate both delta and IV.
 - **visualize_results**: Plots cumulative P&L and basic stats for all trades.
-
----
-
-This concise README and diagram should help traders and developers quickly understand the workflow and function roles in the 0DTE bull put spread backtesting system.
