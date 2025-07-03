@@ -1,6 +1,6 @@
 # 0DTE Bull Put Spread Backtesting System
 
-## 🚀 Quick Start
+## 🚀 Key Information
 Most functions in this codebase are designed to work internally within the main `run_iterative_backtest` function. To backtest the 0DTE bull put spread strategy, you primarily need to execute the last two code chunks in the notebook: running `run_iterative_backtest` and visualizing the results. All other functions are helper functions that operate behind the scenes.
 
 ## Overview
