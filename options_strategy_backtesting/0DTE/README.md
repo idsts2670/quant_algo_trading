@@ -1,5 +1,8 @@
 # 0DTE Bull Put Spread Backtesting System
 
+## 🚀 Quick Start
+Most functions in this codebase are designed to work internally within the main `run_iterative_backtest` function. To backtest the 0DTE bull put spread strategy, you primarily need to execute the last two code chunks in the notebook: running `run_iterative_backtest` and visualizing the results. All other functions are helper functions that operate behind the scenes.
+
 ## Overview
 This system lets you backtest a 0DTE (zero days to expiration) bull put spread options strategy using historical data from Alpaca and Databento. It automates the process of finding, simulating, and evaluating same-day expiry put spreads on underlying stock (default: SPY), with robust risk management and predefined trade logic.
 
