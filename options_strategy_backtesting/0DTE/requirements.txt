@@ -1,0 +1,13 @@
+pandas
+numpy
+scipy
+matplotlib
+databento
+alpaca-py
+
+# Environment management
+python-dotenv
+
+# Optional: Jupyter notebook support (uncomment if needed)
+# jupyter
+# ipykernel 
