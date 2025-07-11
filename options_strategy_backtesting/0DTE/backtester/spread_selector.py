@@ -1,8 +1,7 @@
 """
 Spread selector for identifying optimal bull put spread option pairs.
 
-This module contains the logic for finding short and long put options
-that meet the specified delta and spread width criteria.
+This module contains the logic for finding short and long put options that meet the specified delta and spread width criteria.
 """
 
 from dataclasses import dataclass

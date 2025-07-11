@@ -1,6 +1,6 @@
 # 0DTE Options Strategy Backtesting System
 
-A professional-grade backtesting framework for 0DTE (Zero Days to Expiration) bull put spread options strategies, built with clean object-oriented architecture.
+A backtesting framework for 0DTE (Zero Days to Expiration) bull put spread options strategies, built with object-oriented architecture.
 
 ## Quick Start
 
@@ -31,18 +31,18 @@ That's it! Three lines to run a complete backtest.
 ## Project Structure
 
 ```
-0DTE/                              # Main project directory
-├── backtester/                    # Core backtesting package
-│   ├── __init__.py                # Package exports
-│   ├── data_client.py             # Data fetching (Alpaca + Databento)
-│   ├── option_utils.py            # Mathematical calculations (IV, Delta)
-│   ├── spread_selector.py         # Spread selection logic
-│   └── backtester.py              # Main backtesting engine
+0DTE/                                # Main project directory
+├── backtester/                      # Core backtesting package
+│   ├── __init__.py                  # Package exports
+│   ├── data_client.py               # Data fetching (Alpaca + Databento)
+│   ├── option_utils.py              # Mathematical calculations (IV, Delta)
+│   ├── spread_selector.py           # Spread selection logic
+│   └── backtester.py                # Main backtesting engine
 ├── zero_dte_backtest_original.ipynb # Original implementation (reference only)
-├── run_backtest.py                # CLI interface
-├── requirements.txt               # Python dependencies
-├── .env.example                   # Environment variables template
-└── README.md                      # This file
+├── run_backtest.py                  # CLI interface
+├── requirements.txt                 # Python dependencies
+├── .env.example                     # Environment variables template
+└── README.md                        # This file
 ```
 
 ## Installation
@@ -77,6 +77,22 @@ ALPACA_SECRET_KEY=your_alpaca_secret_key
 DATABENTO_API_KEY=your_databento_api_key
 ```
 
+### Core Parameters for the Algorithm
+  ```python
+  ZeroDTEBacktester(
+      underlying_symbol='SPY',                  # Underlying asset
+      start_days_ago=8,                         # Backtest start (days ago)
+      end_days_ago=2,                           # Backtest end (days ago)
+      short_put_delta_range=(-0.60, -0.20),     # Short put delta criteria
+      long_put_delta_range=(-0.40, -0.20),      # Long put delta criteria
+      spread_width_range=(2, 4),                # Spread width ($)
+      target_profit_percentage=0.5,             # Profit target to exit (50% of credit)
+      delta_stop_loss_multiplier=2.5,           # Delta stop loss multiplier to exit
+      risk_free_rate=0.01,                      # Risk-free rate (1%)
+      buffer_percentage=0.05                    # Strike range buffer (5%)
+  )
+  ```
+
 ## Usage Examples
 
 ### Basic Usage
@@ -90,58 +106,6 @@ results = backtester.run()
 # View results
 print(f"Total P&L: ${results['theoretical_pnl'].sum():.2f}")
 backtester.plot_results()
-```
-
-### Customizing Strategy Parameters
-To modify delta ranges, profit targets, or other strategy settings, edit your Python script or notebook:
-
-```python
-# Example: Tighter delta range and higher profit target
-backtester = ZeroDTEBacktester(
-    short_put_delta_range=(-0.40, -0.25),  # More conservative short puts
-    target_profit_percentage=0.6,          # Take 60% profits instead of 50%
-    spread_width_range=(2, 3)              # Narrower spreads
-)
-results = backtester.run()
-```
-
-### Custom Configuration
-```python
-# Customize strategy parameters
-backtester = ZeroDTEBacktester(
-    underlying_symbol='SPY',
-    start_days_ago=10,
-    end_days_ago=1,
-    short_put_delta_range=(-0.50, -0.25),  # Tighter delta range
-    long_put_delta_range=(-0.35, -0.15),
-    spread_width_range=(3, 6),             # Wider spreads
-    target_profit_percentage=0.4,          # 40% profit target
-    delta_stop_loss_multiplier=2.0,        # Conservative stop loss
-    risk_free_rate=0.015                   # Current risk-free rate
-)
-
-results = backtester.run(max_iterations=200)
-stats = backtester.get_trade_statistics()
-
-print(f"Sharpe Ratio: {stats.get('sharpe_ratio', 'N/A')}")
-print(f"Max Drawdown: ${stats.get('max_drawdown', 0):.2f}")
-```
-
-### CLI Usage
-```bash
-# Run with default parameters
-python run_backtest.py
-
-# Custom parameters
-python run_backtest.py \
-    --symbol SPY \
-    --start-days-ago 10 \
-    --max-iterations 2000 \
-    --target-profit 0.4 \
-    --plot
-
-# See all options
-python run_backtest.py --help
 ```
 
 ### Jupyter Notebook
@@ -167,6 +131,64 @@ plt.title('P&L Distribution')
 plt.tight_layout()
 plt.show()
 ```
+
+
+### CLI Usage
+```bash
+# Run with default parameters
+python run_backtest.py
+
+# Custom parameters
+python run_backtest.py \
+    --symbol SPY \
+    --start-days-ago 10 \
+    --max-iterations 2000 \
+    --target-profit 0.4 \
+    --plot
+
+# See all options
+python run_backtest.py --help
+```
+
+
+## Configuration Options
+### Core Parameters for the Backtesting Algorithm
+  ```python
+  ZeroDTEBacktester(
+      underlying_symbol='SPY',                  # Underlying asset
+      start_days_ago=8,                         # Backtest start (days ago)
+      end_days_ago=2,                           # Backtest end (days ago)
+      short_put_delta_range=(-0.60, -0.20),     # Short put delta criteria
+      long_put_delta_range=(-0.40, -0.20),      # Long put delta criteria
+      spread_width_range=(2, 4),                # Spread width ($)
+      target_profit_percentage=0.5,             # Profit target to exit (50% of credit)
+      delta_stop_loss_multiplier=2.5,           # Delta stop loss multiplier to exit
+      risk_free_rate=0.01,                      # Risk-free rate (1%)
+      buffer_percentage=0.05                    # Strike range buffer (5%)
+  )
+  ```
+### Customizing Strategy Parameters Example
+To modify delta ranges, profit targets, or other strategy settings, edit your Python script or notebook:
+
+```python
+# Customize strategy parameters
+backtester = ZeroDTEBacktester(
+    underlying_symbol='SPY',
+    start_days_ago=10,
+    end_days_ago=1,
+    short_put_delta_range=(-0.50, -0.25),  # Tighter delta range for more conservative short puts
+    spread_width_range=(3, 6),             # Wider spreads
+    target_profit_percentage=0.4,          # Take 60% profits instead of 50%
+    risk_free_rate=0.015                   # Increased risk-free rate
+)
+
+results = backtester.run(max_iterations=3500)
+stats = backtester.get_trade_statistics()
+
+print(f"Sharpe Ratio: {stats.get('sharpe_ratio', 'N/A')}")
+print(f"Max Drawdown: ${stats.get('max_drawdown', 0):.2f}")
+```
+
 
 ## Architecture Overview
 
@@ -228,7 +250,7 @@ spread = selector.find_spread_pair(
 - Monitors exit conditions
 - Generates results and statistics
 
-## Strategy Details
+## Default Strategy Details
 
 ### Bull Put Spread Strategy
 A **bull put spread** is a credit spread that profits when the underlying asset stays above the short strike price.
@@ -243,7 +265,7 @@ A **bull put spread** is a credit spread that profits when the underlying asset 
 - **Long Put Delta**: -0.40 to -0.20 (configurable)  
 - **Spread Width**: $2-$4 (configurable)
 - **Expiration**: Same day (0DTE)
-- **Time Window**: 13:30-20:00 ET
+- **Time Window**: 13:30-20:00 UTC (9:30-16:00 ET)
 
 ### Exit Conditions (Priority Order)
 1. **Profit Target**: 50% of credit received (configurable)
@@ -279,74 +301,22 @@ print(f"Sharpe Ratio: {stats['sharpe_ratio']:.2f}")
 - **assignment_risk**: Underlying below short strike
 - **expired**: Held to expiration
 
-## Configuration Options
-
-### Core Parameters
-```python
-ZeroDTEBacktester(
-    underlying_symbol='SPY',                    # Underlying asset
-    start_days_ago=8,                          # Backtest start (days ago)
-    end_days_ago=2,                            # Backtest end (days ago)
-    short_put_delta_range=(-0.60, -0.20),     # Short put delta criteria
-    long_put_delta_range=(-0.40, -0.20),      # Long put delta criteria
-    spread_width_range=(2, 4),                # Spread width ($)
-    target_profit_percentage=0.5,             # Profit target (50% of credit)
-    delta_stop_loss_multiplier=2.5,           # Delta stop loss multiplier
-    risk_free_rate=0.01,                      # Risk-free rate (1%)
-    buffer_percentage=0.05                    # Strike range buffer (5%)
-)
-```
-
-### Advanced Options
-```python
-# Custom data client
-from backtester.data_client import DataClient
-custom_client = DataClient(
-    alpaca_api_key="custom_key",
-    databento_api_key="custom_key"
-)
-
-backtester = ZeroDTEBacktester(data_client=custom_client)
-```
-
-
-## Contributing
-
-### Development Setup
-```bash
-# Clone the repository
-git clone <repo-url>
-cd 0DTE/
-
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# You're now ready to use the backtesting system!
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your API keys
-```
-
-### Adding New Features
-1. **Follow existing patterns**: Study the current architecture
-2. **Update documentation**: Keep README and docstrings current
-3. **Validate results**: Ensure new features don't break existing functionality
-
-### Code Standards
-- **PEP 8** compliance
-- **Type hints** for all public methods
-- **Comprehensive docstrings**
-
 ## Additional Resources
 
 - **[Workflow Diagram](workflow_diagram.mmd)**: Visual strategy representation
-- **[Example Notebook](zero_dte_backtest_refactored.ipynb)**: Interactive examples and tutorials
+- **[Example Notebook](run_zero_dte_backtest.ipynb)**: Interactive examples and tutorials
 - **[Original Implementation](zero_dte_backtest_original.ipynb)**: Legacy code for reference and learning
+
+## Model Assumptions and Limitations
+
+**Black-Scholes Model and Early Assignment:**
+This backtester uses the **Black-Scholes model** for its speed and simplicity. It operates on the key assumption that the risk of **early assignment is negligible** for 0DTE options, making it a practical choice over more complex models (e.g., Binomial) that account for early exercise.
+
+**Dividend Impact on Accuracy:**
+The standard Black-Scholes model does not account for dividends. This can lead to pricing inaccuracies for dividend-paying stocks like SPY, especially around ex-dividend dates. The model is most accurate for non-dividend-paying assets.
+
+**Adjusted Option Symbols:**
+The backtester does not handle **adjusted option symbols** that result from corporate actions like splits or special dividends. This will cause failures or inaccurate results on adjustment days. Developers can build a more robust system by using Alpaca's [Corporate Actions API](https://alpaca.markets/sdks/python/api_reference/broker/corporate-actions.html#corporate-actions) to handle these events.
 
 ## Risk Disclaimer
 
@@ -356,19 +326,3 @@ This software is for **educational and research purposes only**. Options trading
 - **No Financial Advice**: This is not investment advice
 - **Use at Your Own Risk**: Authors not responsible for trading losses
 - **Validate Thoroughly**: Test extensively before any real trading
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- **Alpaca Markets**: Stock market data API
-- **Databento**: Options market data provider
-- **Open Source Community**: Libraries and tools that made this possible
-
----
-
-**Happy backtesting!**
-
-For questions, issues, or contributions, please open an issue or submit a pull request.
