@@ -1,9 +1,9 @@
-pandas
-numpy
-scipy
-matplotlib
-databento
 alpaca-py
+databento
+matplotlib
+numpy
+pandas
+scipy
 
 # Environment management
 python-dotenv

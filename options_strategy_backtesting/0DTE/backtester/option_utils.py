@@ -4,11 +4,12 @@ Option utility functions for calculating Greeks, implied volatility, and symbol 
 This module contains pure mathematical functions with no external dependencies except for NumPy and SciPy, making them easily unit-testable.
 """
 
-import numpy as np
-from scipy.stats import norm
-from scipy.optimize import brentq
 from datetime import date
 from typing import List
+
+import numpy as np
+from scipy.optimize import brentq
+from scipy.stats import norm
 
 
 class OptionUtils:
