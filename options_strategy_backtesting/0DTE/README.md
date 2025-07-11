@@ -3,7 +3,7 @@
 A backtesting framework for 0DTE (Zero Days to Expiration) bull put spread options strategies, built with object-oriented architecture.
 
 ## Quick Start
-
+Three lines to run a complete backtest.
 ```python
 from backtester import ZeroDTEBacktester
 
@@ -16,8 +16,6 @@ print(f"Total P&L: ${results['theoretical_pnl'].sum():.2f}")
 print(f"Total Trades: {len(results)}")
 print(f"Win Rate: {(results['theoretical_pnl'] > 0).mean()*100:.1f}%")
 ```
-
-That's it! Three lines to run a complete backtest.
 
 ## Key Features
 
@@ -38,8 +36,9 @@ That's it! Three lines to run a complete backtest.
 │   ├── option_utils.py              # Mathematical calculations (IV, Delta)
 │   ├── spread_selector.py           # Spread selection logic
 │   └── backtester.py                # Main backtesting engine
-├── zero_dte_backtest_original.ipynb # Original implementation (reference only)
 ├── run_backtest.py                  # CLI interface
+├── run_backtest.ipynb               # Interactive notebook to configure, run, and analyze backtests
+├── zero_dte_backtest_original.ipynb # Original implementation (reference only)
 ├── requirements.txt                 # Python dependencies
 ├── .env.example                     # Environment variables template
 └── README.md                        # This file
@@ -57,41 +56,25 @@ That's it! Three lines to run a complete backtest.
 # Navigate to the project directory
 cd 0DTE/
 
-# Create virtual environment (recommended)
+# Create and activate virtual environment (recommended)
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Set up environment variables
+# Set up environment variables by copying .env.example file
 cp .env.example .env
-# Edit .env with your API keys
 ```
 
 ### Environment Variables
 Insert your actual API keys in the `.env` file:
 ```bash
+# Edit .env with your API keys
 ALPACA_API_KEY=your_alpaca_api_key
 ALPACA_SECRET_KEY=your_alpaca_secret_key
 DATABENTO_API_KEY=your_databento_api_key
 ```
-
-### Core Parameters for the Algorithm
-  ```python
-  ZeroDTEBacktester(
-      underlying_symbol='SPY',                  # Underlying asset
-      start_days_ago=8,                         # Backtest start (days ago)
-      end_days_ago=2,                           # Backtest end (days ago)
-      short_put_delta_range=(-0.60, -0.20),     # Short put delta criteria
-      long_put_delta_range=(-0.40, -0.20),      # Long put delta criteria
-      spread_width_range=(2, 4),                # Spread width ($)
-      target_profit_percentage=0.5,             # Profit target to exit (50% of credit)
-      delta_stop_loss_multiplier=2.5,           # Delta stop loss multiplier to exit
-      risk_free_rate=0.01,                      # Risk-free rate (1%)
-      buffer_percentage=0.05                    # Strike range buffer (5%)
-  )
-  ```
 
 ## Usage Examples
 
