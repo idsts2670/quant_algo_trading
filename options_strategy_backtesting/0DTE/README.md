@@ -1,247 +1,92 @@
 # 0DTE Options Strategy Backtesting System
 
-A backtesting framework for 0DTE (Zero Days to Expiration) bull put spread options strategies, built with object-oriented architecture.
+## Overview
+This system lets you backtest a 0DTE (zero days to expiration) bull put spread options strategy using historical data from Alpaca and Databento. It automates the process of finding, simulating, and evaluating same-day expiry put spreads on underlying stock (default: SPY), with robust risk management and predefined trade logic.
 
-## Quick Start
-Three lines to run a complete backtest.
-```python
-from backtester import ZeroDTEBacktester
+**Note:** This backtesting system is supplemental to our tutorial guide [How To Trade 0DTE Options with Alpaca's Trading API](https://alpaca.markets/learn/how-to-trade-0dte-options-on-alpaca), which covers the theoretical foundations and practical implementation of 0DTE strategies using the live market data.
 
-# Run a backtest with default parameters
-backtester = ZeroDTEBacktester()
-results = backtester.run()
-backtester.plot_results()
 
-print(f"Total P&L: ${results['theoretical_pnl'].sum():.2f}")
-print(f"Total Trades: {len(results)}")
-print(f"Win Rate: {(results['theoretical_pnl'] > 0).mean()*100:.1f}%")
-```
 
-## Key Features
-
-- **Easy Option Strategy Testing**: Test 0DTE bull put spreads with just 3 lines of code
-- **Flexible Parameter Customization**: Adjust delta ranges, spread widths, profit targets, and risk management settings
-- **Historical Market Data**: Uses historical market data from Alpaca (stocks) and Databento (options)
-- **Comprehensive Analytics**: Get detailed performance metrics, win rates, and profit/loss analysis
-- **Visual Results**: Built-in plotting for strategy performance and trade distribution
-- **Command-Line Ready**: Run backtests from terminal for automation and scripting
-
-## Project Structure
-
-```
-0DTE/                                # Main project directory
-├── backtester/                      # Core backtesting package
-│   ├── __init__.py                  # Package exports
-│   ├── data_client.py               # Data fetching (Alpaca + Databento)
-│   ├── option_utils.py              # Mathematical calculations (IV, Delta)
-│   ├── spread_selector.py           # Spread selection logic
-│   └── backtester.py                # Main backtesting engine
-├── run_backtest.py                  # CLI interface
-├── run_backtest.ipynb               # Interactive notebook to configure, run, and analyze backtests
-├── zero_dte_backtest_original.ipynb # Original implementation (reference only)
-├── requirements.txt                 # Python dependencies
-├── .env.example                     # Environment variables template
-└── README.md                        # This file
-```
+## How It Works (Summary)
+1. **Setup**: Connect to Alpaca and set parameters.
+2. **Data Collection**: Download historical stock (bar data) and options data (tick data) at 1-minute intervals for the backtesting window.
+3. **Trade Simulation**:
+   - **Initialization**: 
+     - Start scanning through historical market data chronologically from the earliest timestamp.
+   - **Option Analysis**:
+     - Calculate the options Greeks (delta) and Implied Volatility (IV) for each option symbol.
+     - Find the first valid option pair that meets our trading criteria to build the bull put spread
+   - **Continuous Monitoring**:
+     - Perform these calculations every minute to identify suitable option legs.
+   - **Spread Formation**:
+     - Once suitable option legs are identified at the same timestamp, calculate the credits to be received and the total delta.
+   - **Trade Management**:
+     - Simulate entering the bull put spread.
+     - Monitor for exit conditions such as profit targets, stop-loss triggers, or expiration.
+4. **Results**: Aggregate and visualize the results for performance analysis.
 
 ## Installation
 
-### Prerequisites
-- Python 3.8+
-- Alpaca API account (https://app.alpaca.markets/signup)
+### 1. Prerequisites
+- Python
+- Alpaca API account (https://alpaca.markets/algotrading?ref=alpaca.markets)
+  - Check out our tutorial article: [How to Start Paper Trading with Alpaca's Trading API](https://alpaca.markets/learn/start-paper-trading?ref=alpaca.markets)
 - Databento API account (https://databento.com/signup)
 
-### Setup
-```bash
-# Navigate to the project directory
-cd 0DTE/
+### 2. Create and edit a .env file for your Environment Variables in the project directory
+ 1. Copy the example environment file in the project root by running this command:
+    ```bash
+    cp .env.example .env
+    ```
+ 2. Insert your actual API keys in the `.env` file
+    ```bash
+    # Edit .env with your API keys
+    ALPACA_API_KEY=your_alpaca_api_key
+    ALPACA_SECRET_KEY=your_alpaca_secret_key
+    ALPACA_PAPER_TRADE=True
+    DATABENTO_API_KEY=your_databento_api_key
+     ```
 
-# Create and activate virtual environment (recommended)
+### 3. Python Dependencies (Optional)
+
+**Note:** If you're running the notebook in Google Colab, virtual environment setup is not necessary\
+If you need to install any dependencies, use the following commands:
+
+```bash
+# Create virtual environment (recommended for IDEs other than Google Colab)
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables by copying .env.example file
-cp .env.example .env
+# Install required packages (skip any you already have)
+pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupyter ipykernel
 ```
 
-### Environment Variables
-Insert your actual API keys in the `.env` file:
+**Option A: Using pip (traditional)**
+
 ```bash
-# Edit .env with your API keys
-ALPACA_API_KEY=your_alpaca_api_key
-ALPACA_SECRET_KEY=your_alpaca_secret_key
-DATABENTO_API_KEY=your_databento_api_key
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupyter ipykernel
 ```
 
-## Usage Examples
+**Option B: Using uv (modern, faster)**
 
-### Basic Usage
-```python
-from backtester import ZeroDTEBacktester
-
-# Default configuration (SPY, last 8 days, standard parameters)
-backtester = ZeroDTEBacktester()
-results = backtester.run()
-
-# View results
-print(f"Total P&L: ${results['theoretical_pnl'].sum():.2f}")
-backtester.plot_results()
-```
-
-### Jupyter Notebook
-```python
-# In Jupyter notebook
-%load_ext autoreload
-%autoreload 2
-
-from backtester import ZeroDTEBacktester
-import matplotlib.pyplot as plt
-
-backtester = ZeroDTEBacktester()
-results = backtester.run()
-
-# Custom plotting
-plt.figure(figsize=(12, 8))
-plt.subplot(2, 1, 1)
-plt.plot(results.index, results['cumulative_pnl'])
-plt.title('Cumulative P&L')
-plt.subplot(2, 1, 2)
-plt.hist(results['theoretical_pnl'], bins=20)
-plt.title('P&L Distribution')
-plt.tight_layout()
-plt.show()
-```
-
-
-### CLI Usage
+To use uv, you'll first need to install it. See the [official uv installation guide](https://docs.astral.sh/uv/getting-started/installation/) for detailed installation instructions for your platform.
 ```bash
-# Run with default parameters
-python run_backtest.py
-
-# Custom parameters
-python run_backtest.py \
-    --symbol SPY \
-    --start-days-ago 10 \
-    --max-iterations 2000 \
-    --target-profit 0.4 \
-    --plot
-
-# See all options
-python run_backtest.py --help
+uv venv
+uv pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupyter ipykernel
 ```
 
-
-## Configuration Options
-### Core Parameters for the Backtesting Algorithm
-  ```python
-  ZeroDTEBacktester(
-      underlying_symbol='SPY',                  # Underlying asset
-      start_days_ago=8,                         # Backtest start (days ago)
-      end_days_ago=2,                           # Backtest end (days ago)
-      short_put_delta_range=(-0.60, -0.20),     # Short put delta criteria
-      long_put_delta_range=(-0.40, -0.20),      # Long put delta criteria
-      spread_width_range=(2, 4),                # Spread width ($)
-      target_profit_percentage=0.5,             # Profit target to exit (50% of credit)
-      delta_stop_loss_multiplier=2.5,           # Delta stop loss multiplier to exit
-      risk_free_rate=0.01,                      # Risk-free rate (1%)
-      buffer_percentage=0.05                    # Strike range buffer (5%)
-  )
-  ```
-### Customizing Strategy Parameters Example
-To modify delta ranges, profit targets, or other strategy settings, edit your Python script or notebook:
-
-```python
-# Customize strategy parameters
-backtester = ZeroDTEBacktester(
-    underlying_symbol='SPY',
-    start_days_ago=10,
-    end_days_ago=1,
-    short_put_delta_range=(-0.50, -0.25),  # Tighter delta range for more conservative short puts
-    spread_width_range=(3, 6),             # Wider spreads
-    target_profit_percentage=0.4,          # Take 60% profits instead of 50%
-    risk_free_rate=0.015                   # Increased risk-free rate
-)
-
-results = backtester.run(max_iterations=3500)
-stats = backtester.get_trade_statistics()
-
-print(f"Sharpe Ratio: {stats.get('sharpe_ratio', 'N/A')}")
-print(f"Max Drawdown: ${stats.get('max_drawdown', 0):.2f}")
-```
-
-
-## Architecture Overview
-
-### Component Responsibilities
-
-#### 1. **DataClient** (`data_client.py`)
-**Purpose**: Handles all external data access
-- Fetches daily stock bars from Alpaca
-- Retrieves intraday stock data (1-minute bars)
-- Gets option tick data from Databento
-- Combines and organizes historical datasets
-
-```python
-from backtester.data_client import DataClient
-
-client = DataClient()
-historical_data = client.get_comprehensive_historical_data('SPY', start_date, end_date)
-```
-
-#### 2. **OptionUtils** (`option_utils.py`)
-**Purpose**: Pure mathematical functions for options pricing
-- Black-Scholes delta calculation
-- Implied volatility using Brent's method
-- Option symbol parsing and generation
-- Strike price extraction
-
-```python
-from backtester.option_utils import OptionUtils
-
-delta = OptionUtils.calculate_delta(
-    option_price=2.5, strike_price=580, expiry_timestamp=expiry,
-    underlying_price=585, risk_free_rate=0.01, option_type='put',
-    current_timestamp=now
-)
-```
-
-#### 3. **SpreadSelector** (`spread_selector.py`)
-**Purpose**: Identifies optimal spread pairs
-- Finds short and long put options meeting delta criteria
-- Validates spread width requirements
-- Calculates spread metrics for monitoring
-
-```python
-from backtester.spread_selector import SpreadSelector
-
-selector = SpreadSelector()
-spread = selector.find_spread_pair(
-    historical_data, 
-    short_delta_range=(-0.60, -0.20),
-    long_delta_range=(-0.40, -0.20),
-    spread_width_range=(2, 4)
-)
-```
-
-#### 4. **ZeroDTEBacktester** (`backtester.py`)
-**Purpose**: Main orchestration engine
-- Coordinates all components
-- Executes iterative backtesting
-- Monitors exit conditions
-- Generates results and statistics
-
-## Default Strategy Details
-
-### Bull Put Spread Strategy
-A **bull put spread** is a credit spread that profits when the underlying asset stays above the short strike price.
+## Bull Put Spread Strategy Overview
+A **bull put spread on 0DTE** is a credit spread strategy using options that expire the same trading day, which profits when the underlying asset stays above the short strike price at expiration.
 
 **Structure:**
 - **Sell** a higher-strike put (collect premium)
 - **Buy** a lower-strike put (limit risk)
 - **Net result**: Receive credit upfront
+
+### Customizing Default Values
+This section outlines the default values for the bull put spread strategy on 0DTE. These values are configurable and can be adjusted according to user preferences to better fit individual trading strategies and risk tolerance.
 
 ### Entry Criteria
 - **Short Put Delta**: -0.60 to -0.20 (configurable)
@@ -262,50 +107,87 @@ A **bull put spread** is a credit spread that profits when the underlying asset 
 - **Delta Monitoring**: Continuous risk assessment
 - **Automatic Stops**: No manual intervention
 
-## Performance Metrics
 
-The backtester provides comprehensive performance analytics:
+## Main Functions & Flow
 
-```python
-stats = backtester.get_trade_statistics()
+- **setup_alpaca_clients**: Connects to Alpaca and returns API clients for trading, options, and stocks.
+- **run_iterative_backtest**: Orchestrates the backtest, running multiple trades over the chosen period.
+- **get_daily_stock_bars_df**: Fetches daily price bars for the underlying (e.g., SPY).
+- **collect_option_symbols_by_expiration**: Collect option symbols grouped by expiration datetime based on stock bars data.
+  - Uses **calculate_strike_price_range** and **generate_put_option_symbols** internally.
+- **get_stock_and_option_historical_data**: Retrieves intraday bars for the underlying and tick data for options, organized by timestamp.
+  - Uses **extract_strike_price_from_symbol** internally to extract strike price from option symbol.
+- **trade_0DTE_options_historical**: Simulates a single bull put spread trade using historical data, monitoring for exit conditions.
+- **find_short_and_long_puts**: Selects the best short and long put pair for the spread based on delta and spread width.
+  - Uses **calculate_delta_historical** and **create_option_dict_historical** internally.
+  - **calculate_delta_historical** uses **calculate_implied_volatility** to calculate both delta and IV.
+- **visualize_results**: Plots cumulative P&L and basic stats for all trades.
 
-# Key metrics available:
-print(f"Total Trades: {stats['total_trades']}")
-print(f"Win Rate: {stats['win_rate']:.1%}")
-print(f"Average P&L: ${stats['avg_pnl']:.2f}")
-print(f"Profit Factor: {stats['profit_factor']:.2f}")
-print(f"Max Drawdown: ${stats['max_drawdown']:.2f}")
-print(f"Sharpe Ratio: {stats['sharpe_ratio']:.2f}")
+## Workflow Diagram
+
+```mermaid
+flowchart TD
+    %% Top section - Data Collection Workflow
+    subgraph DataCollection ["📊 Data Collection & Preparation"]
+        B["🔧 setup_alpaca_clients<br/>Initialize API Clients<br/>📤 Returns: trade_client, option_historical_data_client, stock_data_client"] --> D["📊 get_daily_stock_bars_df<br/>Fetch Historical Daily Stock Bars Data<br/>📤 Returns: stock_bars_data"]
+        D --> E["🎯 collect_option_symbols_by_expiration<br/>Generate Historical Option Universe<br/>📥 Uses: stock_bars_data<br/>📤 Returns: option_symbols_by_expiration"]
+        E --> F["📈 get_stock_and_option_historical_data<br/>Fetch Historical Intraday Bars Data<br/>📥 Uses: option_symbols_by_expiration<br/>📤 Returns: stock_option_historical_data_by_timestamp"]
+        
+        %% Internal functions for data collection
+        E -.-> G1["📏 calculate_strike_price_range"]
+        F -.-> I1["🔍 extract_strike_price_from_symbol"]
+        G1 -.-> H1["🏷️ generate_put_option_symbols"]
+    end
+    
+    %% Bottom section - Trade Execution Workflow
+    subgraph TradeExecution ["💼 Trade Execution & Monitoring"]
+        J["🔄 run_iterative_backtest<br/>Orchestrate Historical Backtesting<br/>📥 Uses: API clients"]
+        K["💼 trade_0DTE_options_historical<br/>Execute Historical Trade Simulation<br/>📥 Uses: stock_option_historical_data_by_timestamp<br/>📤 Returns: result"] --> L["🎪 find_short_and_long_puts<br/>Select Option Pair from Historical Data<br/>📥 Uses: stock_option_historical_data_by_timestamp, delta_ranges<br/>📤 Returns: short_put, long_put"]
+        L --> M["👁️ Historical Position Monitoring Loop<br/>Track Historical Trade Progress<br/>📥 Uses: short_put, long_put"]
+        M --> N{"🚪 Historical Exit Conditions<br/>Check Historical Exit Criteria<br/>📥 Monitors: current_spread_price, current_total_delta, current_underlying_price"}
+        N --> O["✅ Exit Historical Trade<br/>Close Historical Position<br/>📤 Returns: result"]
+        O --> P["💾 Store Historical Results<br/>Save Historical Trade Data<br/>📥 Uses: result<br/>📤 Updates: all_results[]"]
+        P --> Q{"🔁 More Historical Iterations?<br/>Continue Historical Trading?<br/>📥 Checks: max_iterations, filtered_stock_option_historical_data_by_timestamp"}
+        
+        %% Separate the Yes/No paths to avoid overlap
+        Q -->|"✅ Yes"| K
+        Q -->|"❌ No"| R["📊 visualize_results<br/>Generate Historical Charts & Stats<br/>📥 Uses: all_results[]<br/>📤 Outputs: charts, statistics"]
+        
+        %% Exit condition branches
+        N -->|"50% Profit Target"| O
+        N -->|"2.5x Delta Stop Loss"| O
+        N -->|"Expiration"| O
+        N -->|"Assignment Risk Protection"| O
+        N -->|"Continue Monitoring"| M
+        
+        %% Internal functions for trade execution
+        L -.-> S1["📐 calculate_delta_historical"]
+        S1 -.-> T1["🌊 calculate_implied_volatility"]
+        T1 -.-> U1["📋 create_option_dict_historical"]
+    end
+    
+    %% Connection between the two main sections
+    F --> J
+    J --> K
+    
+    %% Styling
+    style DataCollection fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style TradeExecution fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style J fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style K fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style R fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    style N fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style O fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    classDef dataFlow fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef calculation fill:#f1f8e9,stroke:#558b2f,stroke-width:2px
+    classDef decision fill:#fce4ec,stroke:#ad1457,stroke-width:2px
+    classDef storage fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef internal fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px
+    
+    class D,E,F,L dataFlow
+    class S1,T1,U1 calculation
+    class N,Q decision
+    class P storage
+    class G1,H1,I1 internal
 ```
-
-### Exit Status Breakdown
-- **target_profit**: Reached profit target
-- **delta_stop_loss**: Hit delta stop loss
-- **assignment_risk**: Underlying below short strike
-- **expired**: Held to expiration
-
-## Additional Resources
-
-- **[Workflow Diagram](workflow_diagram.mmd)**: Visual strategy representation
-- **[Example Notebook](run_zero_dte_backtest.ipynb)**: Interactive examples and tutorials
-- **[Original Implementation](zero_dte_backtest_original.ipynb)**: Legacy code for reference and learning
-
-## Model Assumptions and Limitations
-
-**Black-Scholes Model and Early Assignment:**
-This backtester uses the **Black-Scholes model** for its speed and simplicity. It operates on the key assumption that the risk of **early assignment is negligible** for 0DTE options, making it a practical choice over more complex models (e.g., Binomial) that account for early exercise.
-
-**Dividend Impact on Accuracy:**
-The standard Black-Scholes model does not account for dividends. This can lead to pricing inaccuracies for dividend-paying stocks like SPY, especially around ex-dividend dates. The model is most accurate for non-dividend-paying assets.
-
-**Adjusted Option Symbols:**
-The backtester does not handle **adjusted option symbols** that result from corporate actions like splits or special dividends. This will cause failures or inaccurate results on adjustment days. Developers can build a more robust system by using Alpaca's [Corporate Actions API](https://alpaca.markets/sdks/python/api_reference/broker/corporate-actions.html#corporate-actions) to handle these events.
-
-## Risk Disclaimer
-
-This software is for **educational and research purposes only**. Options trading involves substantial risk and is not suitable for all investors. Past performance does not guarantee future results.
-
-- **Paper Trading Only**: System configured for Alpaca paper trading
-- **No Financial Advice**: This is not investment advice
-- **Use at Your Own Risk**: Authors not responsible for trading losses
-- **Validate Thoroughly**: Test extensively before any real trading
