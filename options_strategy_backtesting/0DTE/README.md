@@ -8,7 +8,7 @@ This system lets you backtest a 0DTE (zero days to expiration) bull put spread o
 
 
 ## How It Works (Summary)
-1. **Setup**: Connect to Alpaca and set parameters.
+1. **Setup**: Connect to Alpaca and Databento API and set parameters.
 2. **Data Collection**: Download historical stock (bar data) and options data (tick data) at 1-minute intervals for the backtesting window.
 3. **Trade Simulation**:
    - **Initialization**: 
