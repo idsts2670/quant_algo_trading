@@ -25,47 +25,92 @@ This system lets you backtest a 0DTE (zero days to expiration) bull put spread o
      - Monitor for exit conditions such as profit targets, stop-loss triggers, or expiration.
 4. **Results**: Aggregate and visualize the results for performance analysis.
 
-## Installation
+## Data Sources
 
+Dual API Integration for Comprehensive Market Data:
+- **Alpaca Trading API**: Stock daily bars + 1-minute intraday data
+- **Databento API**: Options 1-minute tick data with bid/ask spreads
+
+This combination provides both the underlying stock context and detailed options pricing needed for accurate 0DTE backtesting, leveraging each platform's strengths.
+
+## Installation
 ### 1. Prerequisites
-- Python
-- Alpaca API account (https://alpaca.markets/algotrading?ref=alpaca.markets)
+- Alpaca Trading API account
+  - `ALPACA_API_KEY` and `ALPACA_SECRET_KEY` from your [Alpaca dashboard](https://app.alpaca.markets/dashboard/overview)
   - Check out our tutorial article: [How to Start Paper Trading with Alpaca's Trading API](https://alpaca.markets/learn/start-paper-trading?ref=alpaca.markets)
 - Databento API account (https://databento.com/signup)
+  - `DATABENTO_API_KEY` from your [Databento dashboard](https://databento.com/portal/keys)
+- Google Colab or Code Editor (IDE)
+- Python
+- Python package manager (e.g pip or uv)
 
-### 2. Create and edit a .env file for your Environment Variables in the project directory
+### 2. Environment Configuration
+
+The notebook has a code block that automatically detects whether it's running in Google Colab or a local code editor.
+
+  ```python
+  if 'google.colab' in sys.modules:
+      # In Google Colab environment, we will fetch API keys from Secrets.
+      # Please set ALPACA_API_KEY, ALPACA_SECRET_KEY, DATABENTO_API_KEY in Google Colab's Secrets from the left sidebar
+      from google.colab import userdata
+      ALPACA_API_KEY = userdata.get("ALPACA_API_KEY")
+      ALPACA_SECRET_KEY = userdata.get("ALPACA_SECRET_KEY")
+      DATABENTO_API_KEY = userdata.get("DATABENTO_API_KEY")
+  else:
+      # Please safely store your API keys and never commit them to the repository (use .gitignore)
+      # Load environment variables from environment file (e.g., .env)
+      load_dotenv()
+      # API credentials for Alpaca's Trading API and Databento API
+      ALPACA_API_KEY = os.environ.get('ALPACA_API_KEY')
+      ALPACA_SECRET_KEY = os.environ.get('ALPACA_SECRET_KEY')
+      DATABENTO_API_KEY = os.getenv("DATABENTO_API_KEY")
+  ```
+
+API keys are loaded differently based on the environment:
+  - **Google Colab**: Uses [Colab's Secrets feature](https://x.com/GoogleColab/status/1719798406195867814) (set keys in the left sidebar) .
+  - **Local IDE (e.g. VS Code, PyCharm)**: Uses environment variables from a `.env` file.
+   
+
+
+### 3. (For Local IDE Usage) Create and edit a .env file in your project directory to store environment variables
  1. Copy the example environment file in the project root by running this command:
     ```bash
     cp .env.example .env
     ```
- 2. Insert your actual API keys in the `.env` file
+ 2. Insert your actual API keys in the `.env` file.
     ```bash
     # Edit .env with your API keys
     ALPACA_API_KEY=your_alpaca_api_key
     ALPACA_SECRET_KEY=your_alpaca_secret_key
     ALPACA_PAPER_TRADE=True
     DATABENTO_API_KEY=your_databento_api_key
-     ```
+    ```
 
-### 3. Python Dependencies (Optional)
+### 3. (For Google Colab Usage) Use Colab's Secrets feature to store environment variables
 
-**Note:** If you're running the notebook in Google Colab, virtual environment setup is not necessary\
+For Colab usage, you do not need to use an environment file like `.env`.
+  1. Open Google Colab, and go to Secrets.
+  2. Enter the Name (e.g., ALPACA_API_KEY) and Value for each API key. While the Value can be changed, the Name cannot be modified.
+  3. Toggle Notebook access.
+  4. For using them in the notebook, use the given code with the name of your API keys.
+      ```python
+      from google.colab import userdata
+      ALPACA_API_KEY = userdata.get("ALPACA_API_KEY")
+      ALPACA_SECRET_KEY = userdata.get("ALPACA_SECRET_KEY")
+      DATABENTO_API_KEY = userdata.get("DATABENTO_API_KEY")
+      ```
+
+### 4. Python Dependencies (Optional)
+
+**Note:** If you're running the notebook in Google Colab, virtual environment setup is not necessary. 
+
 If you need to install any dependencies, use the following commands:
-
-```bash
-# Create virtual environment (recommended for IDEs other than Google Colab)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install required packages (skip any you already have)
-pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupyter ipykernel
-```
 
 **Option A: Using pip (traditional)**
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python3 -m venv myvenv
+source myvenv/bin/activate  # On Windows: myvenv\Scripts\activate
 pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupyter ipykernel
 ```
 
@@ -73,7 +118,8 @@ pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupy
 
 To use uv, you'll first need to install it. See the [official uv installation guide](https://docs.astral.sh/uv/getting-started/installation/) for detailed installation instructions for your platform.
 ```bash
-uv venv
+uv venv myvenv
+source myvenv/bin/activate # On Windows: myvenv\Scripts\activate
 uv pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupyter ipykernel
 ```
 
