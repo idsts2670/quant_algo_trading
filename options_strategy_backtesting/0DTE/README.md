@@ -123,6 +123,13 @@ source myvenv/bin/activate # On Windows: myvenv\Scripts\activate
 uv pip install databento alpaca-py python-dotenv pandas numpy scipy matplotlib jupyter ipykernel
 ```
 
+**Verify installation:**
+```bash
+ls -la /path/to/your/project/myvenv/bin/
+```
+
+**For Cursor/VS Code:** If your IDE doesn't auto-detect the virtual environment, manually select the Python interpreter (`Cmd+Shift+P` → "Python: Select Interpreter") and enter: `/path/to/your/project/myvenv/bin/python`
+
 ## Bull Put Spread Strategy Overview
 A **bull put spread on 0DTE** is a credit spread strategy using options that expire the same trading day, which profits when the underlying asset stays above the short strike price at expiration.
 
@@ -168,3 +175,7 @@ This section outlines the default values for the bull put spread strategy on 0DT
   - Uses **calculate_delta_historical** and **create_option_series_historical** internally.
   - **calculate_delta_historical** uses **calculate_implied_volatility** to calculate both delta and IV.
 - **visualize_results**: Plots cumulative theoretical &L and basic stats for all trades.
+
+## Usage Analytics Notice
+
+This backtesting notebook uses signed Alpaca API clients with a custom user agent ('ZERO-DTE-NOTEBOOK') to help Alpaca identify usage patterns from educational backtesting notebooks and improve the overall user experience. You can opt out by replacing the TradingClientSigned, OptionHistoricalDataClientSigned, and StockHistoricalDataClientSigned classes with the standard TradingClient, OptionHistoricalDataClient, and StockHistoricalDataClient classes in the client initialization cell — though we kindly hope you'll keep it enabled to support ongoing improvements to Alpaca's educational resources.
