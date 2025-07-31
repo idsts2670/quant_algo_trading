@@ -33,6 +33,17 @@ Dual API Integration for Comprehensive Market Data:
 
 This combination provides both the underlying stock context and detailed options pricing needed for accurate 0DTE backtesting, leveraging each platform's strengths.
 
+If you want to know more about Alpaca-py, please check out the following resources:
+- [Alpaca-py GitHub Page](https://github.com/alpacahq/alpaca-py)
+- [Alpaca-py Documentation](https://alpaca.markets/sdks/python/index.html)
+- [API Reference of Alpaca APIs](https://docs.alpaca.markets/reference/authentication-2)
+
+**Note**: This backtest requires access to both Alpaca’s Trading API and Databento API, with Options Price Reporting Authority (OPRA) data available through the Standard plan. Please review the documents below:
+- [Quickstart (Set up Databento)](https://databento.com/docs/quickstart)
+- [Introducing new OPRA pricing plans](https://databento.com/blog/introducing-new-opra-pricing-plans)
+- [Equity options: Introduction](https://databento.com/docs/examples/options/equity-options-introduction)
+
+
 ## Installation
 ### 1. Prerequisites
 - Alpaca Trading API account
