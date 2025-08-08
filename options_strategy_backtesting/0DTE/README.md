@@ -6,7 +6,6 @@ This system lets you backtest a 0DTE (zero days to expiration) bull put spread o
 **Note:** This backtesting system is supplemental to our tutorial guide [How To Trade 0DTE Options with Alpaca's Trading API](https://alpaca.markets/learn/how-to-trade-0dte-options-on-alpaca), which covers the theoretical foundations and practical implementation of 0DTE strategies using the live market data.
 
 
-
 ## How It Works (Summary)
 1. **Setup**: Connect to Alpaca and Databento API and set parameters.
 2. **Data Collection**: Download historical stock (bar data) and options data (tick data) at 1-minute intervals for the backtesting window.
@@ -33,6 +32,8 @@ Dual API Integration for Comprehensive Market Data:
 
 This combination provides both the underlying stock context and detailed options pricing needed for accurate 0DTE backtesting, leveraging each platform's strengths.
 
+**Databento** is a licensed distributor for 70+ trading venues. Sign up and get **$125** in free credits towards all of their historical data and subscription plans
+
 If you want to know more about Alpaca-py, please check out the following resources:
 - [Alpaca-py GitHub Page](https://github.com/alpacahq/alpaca-py)
 - [Alpaca-py Documentation](https://alpaca.markets/sdks/python/index.html)
@@ -42,7 +43,6 @@ If you want to know more about Alpaca-py, please check out the following resourc
 - [Quickstart (Set up Databento)](https://databento.com/docs/quickstart)
 - [Introducing new OPRA pricing plans](https://databento.com/blog/introducing-new-opra-pricing-plans)
 - [Equity options: Introduction](https://databento.com/docs/examples/options/equity-options-introduction)
-
 
 ## Installation
 ### 1. Prerequisites
