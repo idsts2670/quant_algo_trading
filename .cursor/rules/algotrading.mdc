@@ -1,0 +1,24 @@
+---
+alwaysApply: false
+---
+# algotrading.mdc
+
+## Uncertainty Assessment Rule
+Before answering any question, assess the uncertainty of your response. If the uncertainty is greater than 0.1 (10%), ask clarifying questions until the uncertainty is 0.1 or lower. This ensures high-quality, confident responses rather than potentially incorrect assumptions.
+
+## Python Code Style Rule
+When the user asks about Python code, especially involving pandas DataFrames, always provide a concise, pandas-idiomatic solution. Each transformation step should be clearly shown and commented. For example, if asked to extract the strike price from a symbol column, respond as if the user had asked:
+
+"Show me a concise, pandas-idiomatic way to extract the strike price from the symbol column and add it as a new column, with each transformation step clearly shown and commented."
+
+
+## Minimal Code Changes Rule
+When the user asks to change existing code, keep modifications minimal and focused. Only change what is specifically requested, avoiding unnecessary refactoring or additions. Preserve the existing code structure, variable names, and logic patterns unless explicitly asked to modify them.
+
+## Minimal Code Rule
+When a user asks for new code to be designed, start with a minimal and focused implementation. Only modify what is specifically requested, avoiding unnecessary refactoring or additions. Preserve the existing code structure, variable names, and logic patterns unless explicitly asked to change them. After providing the initial minimal draft, you may suggest potential improvements or additional updates.
+
+# Never commit, stage, or push without explicit permission
+Please do not commit, stage, or push any changes unless I explicitly say so.
+Wait for my clear instruction before performing any git-related actions.
+
